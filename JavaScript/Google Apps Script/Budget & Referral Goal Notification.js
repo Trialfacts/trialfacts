@@ -32,7 +32,7 @@ var goalVars = {
     "regular50": 0,
     "counter25": 0,
     "message": {
-        "text": "<https://docs.google.com/spreadsheets/d/1ufU-ZgFT_wkQdPUn_qSgNicKIOYyw7qUl3jK1CNyVss/edit?usp=sharing|*REFERRAL GOALS &amp; BUDGET USED*>\n" + slackUser("bethany") + slackUser("andro")
+        "text": "<" + sheet("ts") + "|*REFERRAL GOALS &amp; BUDGET USED*>\n" + slackUser("bethany") + slackUser("andro")
     },
     "pilot100Body": "\n\n*Study Complete*",
     "regular100Body": "\n\n*Referral Goal Reached*",
@@ -57,6 +57,7 @@ var goalFuncs = {
                         if (goalVars.helperData[i][goalVars.helperName - 1] == goalVars.checkData[x][goalVars.checkName - 1]) /* check if study names match */ {
                             match = "Yes"; /* match found */
                             // var newHelper = goalFuncs.parseNumbers(goalVars.helperData[i]);
+                            goalVars.helperData[i][goalVars.helperName - 1] = goalFuncs.escapeHtml(goalVars.helperData[i][goalVars.helperName - 1]);
                             goalFuncs.checkStudy(goalVars.helperData[i], goalVars.checkData[x], (parseInt(x, 10) + 1)); /* call goalFuncs.checkStudy function */
                             break;
                         } else {
@@ -68,6 +69,7 @@ var goalFuncs = {
                 }
                 if (match == "No") {
                     // var newHelper = goalFuncs.parseNumbers(goalVars.helperData[i]);
+                    goalVars.helperData[i][goalVars.helperName - 1] = goalFuncs.escapeHtml(goalVars.helperData[i][goalVars.helperName - 1]);
                     goalFuncs.checkStudy(goalVars.helperData[i]); /* call goalFuncs.checkStudy function */
                 }
             }
@@ -155,8 +157,7 @@ var goalFuncs = {
                 }
             }
         } else /* check study without the check tab */ {
-            goalVars.lastRow++;
-            row = goalVars.lastRow;
+            row = ++goalVars.lastRow;
             goalVars.checkTab.appendRow([helper[goalVars.helperName - 1]]);
             if (helper[goalVars.helperType - 1] == "Pilot") {
                 var pilotTarget = goalFuncs.pilotNumber(helper);
