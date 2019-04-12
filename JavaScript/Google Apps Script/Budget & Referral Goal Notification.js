@@ -1,7 +1,7 @@
 // GLOBAL OBJECT FOR VARIABLES
 var goalVars = {
     // logging
-    "logging": true,
+    "logging": false,
     // get all data from helper tab
     "helperData": SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Budget & Referral Goal Helper").getDataRange().getValues(),
     "checkTab": SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Budget & Referral Goal Check"),
@@ -33,7 +33,7 @@ var goalVars = {
     "regular50": 0,
     "counter25": 0,
     "message": {
-        "text": "<" + sheet("ts") + "|*REFERRAL GOALS &amp; BUDGET USED*>\n" + slackUser("bethany") + slackUser("andro")
+        "text": "<" + sheetURL("ts") + "|*REFERRAL GOALS &amp; BUDGET USED*>\n" + slackUser("bethany") + slackUser("andro") /* tags here show up for all notifications */
     },
     "pilot100Body": "\n\n*Study Complete*",
     "regular100Body": "\n\n*Referral Goal Reached*",
@@ -258,6 +258,11 @@ var goalFuncs = {
         }
     },
     "sendMessage": function () {
+        // additional tags below
+        if (goalVars.pilotCompleteCounter > 0 || goalVars.regularCompleteCounter > 0) {
+            goalVars.message.text += slackUser("ragnar");
+        }
+        // studies below
         if (goalVars.pilotCompleteCounter > 0) {
             goalVars.message.text += goalVars.pilot100Body;
         }
