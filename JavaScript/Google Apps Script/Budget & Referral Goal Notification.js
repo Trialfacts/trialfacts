@@ -35,7 +35,7 @@ var goalVars = {
     "message": {
         "text": "<" + sheetURL("ts") + "|*REFERRAL GOALS &amp; BUDGET USED*>\n" + slackUser("bethany") + slackUser("andro") /* tags here show up for all notifications */
     },
-    "pilot100Body": "\n\n*Study Complete*",
+    "pilot100Body": "\n\n*Recruitment Complete*",
     "regular100Body": "\n\n*Referral Goal Reached*",
     "pilot85Body": "\n\n*Study at 85% Progress*",
     "regular75Body": "\n\n*75% of Referral Goal Reached*",
