@@ -443,14 +443,14 @@ function log(var)
 end
 
 -- VARIABLES
-log("Script Start")
+log("BMI for Age Script Start")
 weight = getvalue() --[[ question ID for weight in kg ]]
 log("Weight: " .. weight)
 height = getvalue() --[[ question ID for height in meters]]
 log("Height: " .. height)
 gender = string.lower(getvalue()) --[[ question ID for gender, either male or female ]]
 log("Gender: " .. gender)
-if (gender == male) then
+if (gender == "male") then
     gender = 1
     log("Gender: " .. gender)
 else
@@ -458,7 +458,7 @@ else
     log("Gender: " .. gender)
 end
 DateOfBirth = getvalue() --[[ question ID ]]
-log("DOB: " .. DateOfBirth)
+log("DateOfBirth: " .. DateOfBirth)
 
 -- HIDDEN VALUE ACTIONS
 percentile = 999 --[[ hidden value ID here ]]
@@ -472,7 +472,9 @@ end
 
 -- calculate age in months
 function AgeMos(DOB)
-    birthdate_unix = strtotime(DOB)
+    log("DOB: " .. DOB)
+    birthdate_unix = strtotime(str_replace("/", "-", DOB))
+    log("birthdate_unix: " .. birthdate_unix)
     today = date("Y-m-d")
     today_unix = strtotime(today)
     age_unix = today_unix - birthdate_unix
@@ -493,21 +495,20 @@ for i, x in ipairs(bmiagerev) do
         log("M: " .. M)
         S = x.S
         log("S: " .. S)
-        
-        bmi = weight / (height * height)
+
+        bmi = (weight / height / height * 10000)
         log("BMI: " .. bmi)
-        bmi = round(bmi * 10) / 10
-        log("BMI rounded: " .. bmi)
-        
+
         bmi_z = ((((bmi / M) ^ L) - 1) / (S * L))
         log("BMI Z: " .. bmi_z)
-        
+
         z_perc_not_rounded = 0
         z_perc = 0
         desc = ""
-        
+
         if (bmi_z > 6.5) then
-            z_perc = 1
+            z_perc_not_rounded = 100
+            z_perc = 100
             log("Z Percentage: " .. z_perc)
         elseif (bmi_z <= 6.5 and bmi_z >= -6.5) then
             factK = 1
@@ -516,15 +517,15 @@ for i, x in ipairs(bmiagerev) do
             k = 0
             loopStop = math.exp(-23)
             log("Loop Stop: " .. loopStop)
-            
+
             log("While Loop - Start")
             while (math.abs(term) > loopStop) do
-                term = .3989422804 * (-1 ^ k) * (bmi_z ^ k) / (2 * k + 1) / (2 ^ k) * (bmi_z ^ (k + 1)) / factK
+                term = .3989422804 * (k % 2 == 0 and 1 or -1) * (bmi_z ^ k) / (2 * k + 1) / (2 ^ k) * (bmi_z ^ (k + 1)) / factK
                 sum = (sum + term)
                 k = (k + 1)
                 factK = (factK * k)
             end
-            
+
             sum = (sum + 0.5)
             log("Sum: " .. sum)
             z_perc_not_rounded = (sum * 100)
@@ -532,7 +533,7 @@ for i, x in ipairs(bmiagerev) do
             z_perc = round(z_perc_not_rounded)
             log("Z Percentage: " .. z_perc)
         end
-        
+
         if (z_perc_not_rounded < 5) then
             desc = "Underweight"
             log("Description: " .. desc)
@@ -546,7 +547,7 @@ for i, x in ipairs(bmiagerev) do
             desc = "Obese"
             log("Description: " .. desc)
         end
-        
+
         setvalue(percentile, (z_perc .. "%"))
         log("Z Percentage Set")
         setvalue(description, desc)
@@ -555,3 +556,7 @@ for i, x in ipairs(bmiagerev) do
         break
     end
 end
+
+log("BMI for Age Script End")
+log(" ")
+log(" ")

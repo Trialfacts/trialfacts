@@ -33,7 +33,7 @@ if birthdate == nil or birthdate == false then
 -- birthdate = "09/02/1986"
 end
 
-birthdate_unix = strtotime(birthdate)
+birthdate_unix = strtotime(str_replace("/", "-", birthdate))
 
 --If not using DD/MM/YYYY validation this section of code can be optionally removed
 
