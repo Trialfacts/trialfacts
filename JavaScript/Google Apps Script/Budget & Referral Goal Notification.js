@@ -77,175 +77,13 @@ var goalFuncs = {
     },
     "checkStudy": function (helper, check, row) /* check a study if it's completed a goal or used all of its budget */ {
         var check = check || false; /* assign boolean false to "check" parameter if none is supplied */
-        var row = row || false; /* assign boolean false to row parameter if none is supplied */
-        if (check && row) /* check if "check" & row isn't false */ {
-            if (check[goalVars.check100 - 1] == "Y") /* check if "complete" notification is already sent */ {
-                return; /* don't do anything if "complete" notification is already sent */
-            } else if (helper[goalVars.helperType - 1] == "Pilot") {
-                var pilotTarget = goalFuncs.pilotNumber(helper);
-                if (helper[goalVars.helperRef - 1] >= pilotTarget || helper[goalVars.helperBudget - 1] >= 0.9) {
-                    goalVars.messageCounter++;
-                    goalVars.pilotCompleteCounter++;
-                    goalVars.pilot100Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*\n>Amount Paid: <" + helper[goalVars.helperXLink - 1] + "|$" + helper[goalVars.helperPaid - 1] + ">\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
-                    goalVars.checkTab.getRange(row, goalVars.check100).setValue("Y");
-                } else if (check[goalVars.check85 - 1] == "Y") /* check if 85% notification is already sent */ {
-                    return; /* don't do anything if 85% notification is already sent */
-                } else if (helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.85) || helper[goalVars.helperBudget - 1] >= 0.85) {
-                    goalVars.messageCounter++;
-                    goalVars.counter85++;
-                    goalVars.pilot85Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*\n>Amount Paid: <" + helper[goalVars.helperXLink - 1] + "|$" + helper[goalVars.helperPaid - 1] + ">\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
-                    goalVars.checkTab.getRange(row, goalVars.check85).setValue("Y");
-                } else if (check[goalVars.check50 - 1] == "Y") /* check if 50% notification is already sent */ {
-                    return; /* don't do anything if 50% notification is already sent */
-                } else if (helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.5) || helper[goalVars.helperBudget - 1] >= 0.5) {
-                    goalVars.messageCounter++;
-                    goalVars.pilot50++;
-                    goalVars.pilot50Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*\n>Amount Paid: <" + helper[goalVars.helperXLink - 1] + "|$" + helper[goalVars.helperPaid - 1] + ">\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
-                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
-                }
-            } else if (helper[goalVars.helperType - 1] == "Minimum") {
-                var pilotTarget = goalFuncs.pilotNumber(helper);
-                if (helper[goalVars.helperBudget - 1] >= 0.9 || (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= pilotTarget)) {
-                    goalVars.messageCounter++;
-                    goalVars.pilotCompleteCounter++;
-                    goalVars.pilot100Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*";
-                    if (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= pilotTarget) {
-                        goalVars.pilot100Body += "\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
-                    }
-                    goalVars.checkTab.getRange(row, goalVars.check100).setValue("Y");
-                } else if (check[goalVars.check85 - 1] == "Y") /* check if 85% notification is already sent */ {
-                    return; /* don't do anything if 85% notification is already sent */
-                } else if (helper[goalVars.helperBudget - 1] >= 0.85 || (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.85))) {
-                    goalVars.messageCounter++;
-                    goalVars.counter85++;
-                    goalVars.pilot85Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*";
-                    if (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.85)) {
-                        goalVars.pilot85Body += "\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
-                    }
-                    goalVars.checkTab.getRange(row, goalVars.check85).setValue("Y");
-                } else if (check[goalVars.check50 - 1] == "Y") /* check if 50% notification is already sent */ {
-                    return; /* don't do anything if 50% notification is already sent */
-                } else if (helper[goalVars.helperBudget - 1] >= 0.5 || (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.5))) {
-                    goalVars.messageCounter++;
-                    goalVars.pilot50++;
-                    goalVars.pilot50Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*";
-                    if (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.5)) {
-                        goalVars.pilot50Body += "\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
-                    }
-                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
-                }
-            } else {
-                if (helper[goalVars.helperGoal - 1] >= 1) {
-                    goalVars.messageCounter++;
-                    goalVars.regularCompleteCounter++;
-                    goalVars.regular100Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Referrals Sent: *" + Math.round(helper[goalVars.helperGoal - 1] * 100) + "%*";
-                    goalVars.checkTab.getRange(row, goalVars.check100).setValue("Y");
-                } else if (check[goalVars.check75 - 1] == "Y") /* check if 75% notification is already sent */ {
-                    return; /* don't do anything if 75% notification is already sent */
-                } else if (helper[goalVars.helperGoal - 1] >= 0.75) {
-                    goalVars.messageCounter++;
-                    goalVars.counter75++;
-                    goalVars.regular75Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Referrals Sent: *" + Math.round(helper[goalVars.helperGoal - 1] * 100) + "%*";
-                    goalVars.checkTab.getRange(row, goalVars.check75).setValue("Y");
-                } else if (check[goalVars.check50 - 1] == "Y") /* check if 50% notification is already sent */ {
-                    return; /* don't do anything if 50% notification is already sent */
-                } else if (helper[goalVars.helperGoal - 1] >= 0.5) {
-                    goalVars.messageCounter++;
-                    goalVars.regular50++;
-                    goalVars.regular50Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Referrals Sent: *" + Math.round(helper[goalVars.helperGoal - 1] * 100) + "%*";
-                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
-                } else if (check[goalVars.check25 - 1] == "Y") /* check if 25% notification is already sent */ {
-                    return; /* don't do anything if 25% notification is already sent */
-                } else if (helper[goalVars.helperGoal - 1] >= 0.25) {
-                    goalVars.messageCounter++;
-                    goalVars.counter25++;
-                    goalVars.regular25Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Referrals Sent: *" + Math.round(helper[goalVars.helperGoal - 1] * 100) + "%*";
-                    goalVars.checkTab.getRange(row, goalVars.check25).setValue("Y");
-                }
-            }
-        } else /* check study without the check tab */ {
-            row = ++goalVars.lastRow;
-            goalVars.checkTab.appendRow([helper[goalVars.helperName - 1]]);
-            if (helper[goalVars.helperType - 1] == "Pilot") {
-                var pilotTarget = goalFuncs.pilotNumber(helper);
-                if (helper[goalVars.helperRef - 1] >= pilotTarget || helper[goalVars.helperBudget - 1] >= 0.9) {
-                    goalVars.messageCounter++;
-                    goalVars.pilotCompleteCounter++;
-                    goalVars.pilot100Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*\n>Amount Paid: <" + helper[goalVars.helperXLink - 1] + "|$" + helper[goalVars.helperPaid - 1] + ">\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
-                    goalVars.checkTab.getRange(row, goalVars.check100).setValue("Y");
-                    goalVars.checkTab.getRange(row, goalVars.check85).setValue("Y");
-                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
-                } else if (helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.85) || helper[goalVars.helperBudget - 1] >= 0.85) {
-                    goalVars.messageCounter++;
-                    goalVars.counter85++;
-                    goalVars.pilot85Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*\n>Amount Paid: <" + helper[goalVars.helperXLink - 1] + "|$" + helper[goalVars.helperPaid - 1] + ">\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
-                    goalVars.checkTab.getRange(row, goalVars.check85).setValue("Y");
-                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
-                } else if (helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.5) || helper[goalVars.helperBudget - 1] >= 0.5) {
-                    goalVars.messageCounter++;
-                    goalVars.pilot50++;
-                    goalVars.pilot50Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*\n>Amount Paid: <" + helper[goalVars.helperXLink - 1] + "|$" + helper[goalVars.helperPaid - 1] + ">\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
-                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
-                }
-            } else if (helper[goalVars.helperType - 1] == "Minimum") {
-                var pilotTarget = goalFuncs.pilotNumber(helper);
-                if (helper[goalVars.helperBudget - 1] >= 0.9 || (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= pilotTarget)) {
-                    goalVars.messageCounter++;
-                    goalVars.pilotCompleteCounter++;
-                    goalVars.pilot100Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*";
-                    if (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= pilotTarget) {
-                        goalVars.pilot100Body += "\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
-                    }
-                    goalVars.checkTab.getRange(row, goalVars.check100).setValue("Y");
-                    goalVars.checkTab.getRange(row, goalVars.check85).setValue("Y");
-                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
-                } else if (helper[goalVars.helperBudget - 1] >= 0.85 || (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.85))) {
-                    goalVars.messageCounter++;
-                    goalVars.counter85++;
-                    goalVars.pilot85Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*";
-                    if (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.85)) {
-                        goalVars.pilot85Body += "\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
-                    }
-                    goalVars.checkTab.getRange(row, goalVars.check85).setValue("Y");
-                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
-                } else if (helper[goalVars.helperBudget - 1] >= 0.5 || (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.5))) {
-                    goalVars.messageCounter++;
-                    goalVars.pilot50++;
-                    goalVars.pilot50Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*";
-                    if (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.5)) {
-                        goalVars.pilot50Body += "\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
-                    }
-                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
-                }
-            } else {
-                if (helper[goalVars.helperGoal - 1] >= 1) {
-                    goalVars.messageCounter++;
-                    goalVars.regularCompleteCounter++;
-                    goalVars.regular100Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Referrals Sent: *" + Math.round(helper[goalVars.helperGoal - 1] * 100) + "%*";
-                    goalVars.checkTab.getRange(row, goalVars.check100).setValue("Y");
-                    goalVars.checkTab.getRange(row, goalVars.check75).setValue("Y");
-                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
-                    goalVars.checkTab.getRange(row, goalVars.check25).setValue("Y");
-                } else if (helper[goalVars.helperGoal - 1] >= 0.75) {
-                    goalVars.messageCounter++;
-                    goalVars.counter75++;
-                    goalVars.regular75Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Referrals Sent: *" + Math.round(helper[goalVars.helperGoal - 1] * 100) + "%*";
-                    goalVars.checkTab.getRange(row, goalVars.check75).setValue("Y");
-                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
-                    goalVars.checkTab.getRange(row, goalVars.check25).setValue("Y");
-                } else if (helper[goalVars.helperGoal - 1] >= 0.5) {
-                    goalVars.messageCounter++;
-                    goalVars.regular50++;
-                    goalVars.regular50Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Referrals Sent: *" + Math.round(helper[goalVars.helperGoal - 1] * 100) + "%*";
-                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
-                    goalVars.checkTab.getRange(row, goalVars.check25).setValue("Y");
-                } else if (helper[goalVars.helperGoal - 1] >= 0.25) {
-                    goalVars.messageCounter++;
-                    goalVars.counter25++;
-                    goalVars.regular25Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Referrals Sent: *" + Math.round(helper[goalVars.helperGoal - 1] * 100) + "%*";
-                    goalVars.checkTab.getRange(row, goalVars.check25).setValue("Y");
-                }
-            }
+        var row = row || ++goalVars.lastRow; /* assign boolean false to row parameter if none is supplied */
+        if (helper[goalVars.helperType - 1] == "Pilot") {
+            goalFuncs.checkPilot(helper, check, row);
+        } else if (helper[goalVars.helperType - 1] == "Minimum") {
+            goalFuncs.checkMinimum(helper, check, row);
+        } else {
+            goalFuncs.checkRegular(helper, check, row);
         }
     },
     "pilotNumber": function (helper) {
@@ -255,6 +93,248 @@ var goalFuncs = {
             return ((helper[goalVars.helperPaid - 1] <= 1000) ? 30 : Math.round(((((helper[goalVars.helperPaid - 1] - 1000) / 500) * 10) + 30)));
         } else {
             return "none";
+        }
+    },
+    "checkPilot": function (helper, check, row) {
+        var pilotTarget = goalFuncs.pilotNumber(helper);
+        if (check) /* check if "check" isn't false */ {
+            if (check[goalVars.check100 - 1] == "Y") /* check if "complete" notification is already sent */ {
+                if (helper[goalVars.helperRef - 1] < pilotTarget && helper[goalVars.helperBudget - 1] < 0.9) {
+                    goalVars.checkTab.getRange(row, goalVars.check100).setValue("");
+                }
+                if (helper[goalVars.helperRef - 1] < Math.round(pilotTarget * 0.85) && helper[goalVars.helperBudget - 1] < 0.85) {
+                    goalVars.checkTab.getRange(row, goalVars.check85).setValue("");
+                }
+                if (helper[goalVars.helperRef - 1] < Math.round(pilotTarget * 0.5) && helper[goalVars.helperBudget - 1] < 0.5) {
+                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("");
+                }
+                return;
+            } else if (helper[goalVars.helperRef - 1] >= pilotTarget || helper[goalVars.helperBudget - 1] >= 0.9) {
+                goalVars.messageCounter++;
+                goalVars.pilotCompleteCounter++;
+                goalVars.pilot100Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*\n>Amount Paid: <" + helper[goalVars.helperXLink - 1] + "|$" + helper[goalVars.helperPaid - 1] + ">\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
+                goalVars.checkTab.getRange(row, goalVars.check100).setValue("Y");
+            } else if (check[goalVars.check85 - 1] == "Y") /* check if 85% notification is already sent */ {
+                if (helper[goalVars.helperRef - 1] < Math.round(pilotTarget * 0.85) && helper[goalVars.helperBudget - 1] < 0.85) {
+                    goalVars.checkTab.getRange(row, goalVars.check85).setValue("");
+                }
+                if (helper[goalVars.helperRef - 1] < Math.round(pilotTarget * 0.5) && helper[goalVars.helperBudget - 1] < 0.5) {
+                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("");
+                }
+                return;
+            } else if (helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.85) || helper[goalVars.helperBudget - 1] >= 0.85) {
+                goalVars.messageCounter++;
+                goalVars.counter85++;
+                goalVars.pilot85Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*\n>Amount Paid: <" + helper[goalVars.helperXLink - 1] + "|$" + helper[goalVars.helperPaid - 1] + ">\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
+                goalVars.checkTab.getRange(row, goalVars.check85).setValue("Y");
+            } else if (check[goalVars.check50 - 1] == "Y") /* check if 50% notification is already sent */ {
+                if (helper[goalVars.helperRef - 1] < Math.round(pilotTarget * 0.5) && helper[goalVars.helperBudget - 1] < 0.5) {
+                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("");
+                }
+                return;
+            } else if (helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.5) || helper[goalVars.helperBudget - 1] >= 0.5) {
+                goalVars.messageCounter++;
+                goalVars.pilot50++;
+                goalVars.pilot50Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*\n>Amount Paid: <" + helper[goalVars.helperXLink - 1] + "|$" + helper[goalVars.helperPaid - 1] + ">\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
+                goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
+            }
+        } else {
+            goalVars.checkTab.appendRow([helper[goalVars.helperName - 1]]);
+            if (helper[goalVars.helperRef - 1] >= pilotTarget || helper[goalVars.helperBudget - 1] >= 0.9) {
+                goalVars.messageCounter++;
+                goalVars.pilotCompleteCounter++;
+                goalVars.pilot100Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*\n>Amount Paid: <" + helper[goalVars.helperXLink - 1] + "|$" + helper[goalVars.helperPaid - 1] + ">\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
+                goalVars.checkTab.getRange(row, goalVars.check100).setValue("Y");
+                goalVars.checkTab.getRange(row, goalVars.check85).setValue("Y");
+                goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
+            } else if (helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.85) || helper[goalVars.helperBudget - 1] >= 0.85) {
+                goalVars.messageCounter++;
+                goalVars.counter85++;
+                goalVars.pilot85Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*\n>Amount Paid: <" + helper[goalVars.helperXLink - 1] + "|$" + helper[goalVars.helperPaid - 1] + ">\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
+                goalVars.checkTab.getRange(row, goalVars.check85).setValue("Y");
+                goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
+            } else if (helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.5) || helper[goalVars.helperBudget - 1] >= 0.5) {
+                goalVars.messageCounter++;
+                goalVars.pilot50++;
+                goalVars.pilot50Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*\n>Amount Paid: <" + helper[goalVars.helperXLink - 1] + "|$" + helper[goalVars.helperPaid - 1] + ">\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
+                goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
+            }
+        }
+    },
+    "checkMinimum": function (helper, check, row) {
+        var pilotTarget = goalFuncs.pilotNumber(helper);
+        if (check) /* check if "check" isn't false */ {
+            if (check[goalVars.check100 - 1] == "Y") /* check if "complete" notification is already sent */ {
+                if (helper[goalVars.helperBudget - 1] < 0.9 && (pilotTarget == "none" || helper[goalVars.helperRef - 1] < pilotTarget)) {
+                    goalVars.checkTab.getRange(row, goalVars.check100).setValue("");
+                }
+                if (helper[goalVars.helperBudget - 1] < 0.85 && (pilotTarget == "none" || helper[goalVars.helperRef - 1] < Math.round(pilotTarget * 0.85))) {
+                    goalVars.checkTab.getRange(row, goalVars.check85).setValue("");
+                }
+                if (helper[goalVars.helperBudget - 1] < 0.5 && (pilotTarget == "none" || helper[goalVars.helperRef - 1] < Math.round(pilotTarget * 0.5))) {
+                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("");
+                }
+                return;
+            } else if (helper[goalVars.helperBudget - 1] >= 0.9 || (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= pilotTarget)) {
+                goalVars.messageCounter++;
+                goalVars.pilotCompleteCounter++;
+                goalVars.pilot100Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*";
+                if (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= pilotTarget) {
+                    goalVars.pilot100Body += "\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
+                }
+                goalVars.checkTab.getRange(row, goalVars.check100).setValue("Y");
+            } else if (check[goalVars.check85 - 1] == "Y") /* check if 85% notification is already sent */ {
+                if (helper[goalVars.helperBudget - 1] < 0.85 && (pilotTarget == "none" || helper[goalVars.helperRef - 1] < Math.round(pilotTarget * 0.85))) {
+                    goalVars.checkTab.getRange(row, goalVars.check85).setValue("");
+                }
+                if (helper[goalVars.helperBudget - 1] < 0.5 && (pilotTarget == "none" || helper[goalVars.helperRef - 1] < Math.round(pilotTarget * 0.5))) {
+                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("");
+                }
+                return;
+            } else if (helper[goalVars.helperBudget - 1] >= 0.85 || (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.85))) {
+                goalVars.messageCounter++;
+                goalVars.counter85++;
+                goalVars.pilot85Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*";
+                if (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.85)) {
+                    goalVars.pilot85Body += "\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
+                }
+                goalVars.checkTab.getRange(row, goalVars.check85).setValue("Y");
+            } else if (check[goalVars.check50 - 1] == "Y") /* check if 50% notification is already sent */ {
+                if (helper[goalVars.helperBudget - 1] < 0.5 && (pilotTarget == "none" || helper[goalVars.helperRef - 1] < Math.round(pilotTarget * 0.5))) {
+                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("");
+                }
+                return;
+            } else if (helper[goalVars.helperBudget - 1] >= 0.5 || (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.5))) {
+                goalVars.messageCounter++;
+                goalVars.pilot50++;
+                goalVars.pilot50Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*";
+                if (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.5)) {
+                    goalVars.pilot50Body += "\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
+                }
+                goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
+            }
+        } else {
+            goalVars.checkTab.appendRow([helper[goalVars.helperName - 1]]);
+            if (helper[goalVars.helperBudget - 1] >= 0.9 || (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= pilotTarget)) {
+                goalVars.messageCounter++;
+                goalVars.pilotCompleteCounter++;
+                goalVars.pilot100Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*";
+                if (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= pilotTarget) {
+                    goalVars.pilot100Body += "\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
+                }
+                goalVars.checkTab.getRange(row, goalVars.check100).setValue("Y");
+                goalVars.checkTab.getRange(row, goalVars.check85).setValue("Y");
+                goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
+            } else if (helper[goalVars.helperBudget - 1] >= 0.85 || (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.85))) {
+                goalVars.messageCounter++;
+                goalVars.counter85++;
+                goalVars.pilot85Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*";
+                if (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.85)) {
+                    goalVars.pilot85Body += "\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
+                }
+                goalVars.checkTab.getRange(row, goalVars.check85).setValue("Y");
+                goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
+            } else if (helper[goalVars.helperBudget - 1] >= 0.5 || (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.5))) {
+                goalVars.messageCounter++;
+                goalVars.pilot50++;
+                goalVars.pilot50Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Budget Used: *" + Math.round(helper[goalVars.helperBudget - 1] * 100) + "%*";
+                if (pilotTarget != "none" && helper[goalVars.helperRef - 1] >= Math.round(pilotTarget * 0.5)) {
+                    goalVars.pilot50Body += "\n>Referrals Sent: *" + helper[goalVars.helperRef - 1] + "* of " + pilotTarget;
+                }
+                goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
+            }
+        }
+    },
+    "checkRegular": function (helper, check, row) {
+        if (check) /* check if "check" isn't false */ {
+            if (check[goalVars.check100 - 1] == "Y") /* check if "complete" notification is already sent */ {
+                if (helper[goalVars.helperGoal - 1] < 1) {
+                    goalVars.checkTab.getRange(row, goalVars.check100).setValue("");
+                }
+                if (helper[goalVars.helperGoal - 1] < 0.75) {
+                    goalVars.checkTab.getRange(row, goalVars.check75).setValue("");
+                }
+                if (helper[goalVars.helperGoal - 1] < 0.5) {
+                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("");
+                }
+                if (helper[goalVars.helperGoal - 1] < 0.25) {
+                    goalVars.checkTab.getRange(row, goalVars.check25).setValue("");
+                }
+                return;
+            } else if (helper[goalVars.helperGoal - 1] >= 1) {
+                goalVars.messageCounter++;
+                goalVars.regularCompleteCounter++;
+                goalVars.regular100Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Referrals Sent: *" + Math.round(helper[goalVars.helperGoal - 1] * 100) + "%*";
+                goalVars.checkTab.getRange(row, goalVars.check100).setValue("Y");
+            } else if (check[goalVars.check75 - 1] == "Y") /* check if 75% notification is already sent */ {
+                if (helper[goalVars.helperGoal - 1] < 0.75) {
+                    goalVars.checkTab.getRange(row, goalVars.check75).setValue("");
+                }
+                if (helper[goalVars.helperGoal - 1] < 0.5) {
+                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("");
+                }
+                if (helper[goalVars.helperGoal - 1] < 0.25) {
+                    goalVars.checkTab.getRange(row, goalVars.check25).setValue("");
+                }
+                return;
+            } else if (helper[goalVars.helperGoal - 1] >= 0.75) {
+                goalVars.messageCounter++;
+                goalVars.counter75++;
+                goalVars.regular75Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Referrals Sent: *" + Math.round(helper[goalVars.helperGoal - 1] * 100) + "%*";
+                goalVars.checkTab.getRange(row, goalVars.check75).setValue("Y");
+            } else if (check[goalVars.check50 - 1] == "Y") /* check if 50% notification is already sent */ {
+                if (helper[goalVars.helperGoal - 1] < 0.5) {
+                    goalVars.checkTab.getRange(row, goalVars.check50).setValue("");
+                }
+                if (helper[goalVars.helperGoal - 1] < 0.25) {
+                    goalVars.checkTab.getRange(row, goalVars.check25).setValue("");
+                }
+                return;
+            } else if (helper[goalVars.helperGoal - 1] >= 0.5) {
+                goalVars.messageCounter++;
+                goalVars.regular50++;
+                goalVars.regular50Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Referrals Sent: *" + Math.round(helper[goalVars.helperGoal - 1] * 100) + "%*";
+                goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
+            } else if (check[goalVars.check25 - 1] == "Y") /* check if 25% notification is already sent */ {
+                if (helper[goalVars.helperGoal - 1] < 0.25) {
+                    goalVars.checkTab.getRange(row, goalVars.check25).setValue("");
+                }
+                return;
+            } else if (helper[goalVars.helperGoal - 1] >= 0.25) {
+                goalVars.messageCounter++;
+                goalVars.counter25++;
+                goalVars.regular25Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Referrals Sent: *" + Math.round(helper[goalVars.helperGoal - 1] * 100) + "%*";
+                goalVars.checkTab.getRange(row, goalVars.check25).setValue("Y");
+            }
+        } else {
+            goalVars.checkTab.appendRow([helper[goalVars.helperName - 1]]);
+            if (helper[goalVars.helperGoal - 1] >= 1) {
+                goalVars.messageCounter++;
+                goalVars.regularCompleteCounter++;
+                goalVars.regular100Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Referrals Sent: *" + Math.round(helper[goalVars.helperGoal - 1] * 100) + "%*";
+                goalVars.checkTab.getRange(row, goalVars.check100).setValue("Y");
+                goalVars.checkTab.getRange(row, goalVars.check75).setValue("Y");
+                goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
+                goalVars.checkTab.getRange(row, goalVars.check25).setValue("Y");
+            } else if (helper[goalVars.helperGoal - 1] >= 0.75) {
+                goalVars.messageCounter++;
+                goalVars.counter75++;
+                goalVars.regular75Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Referrals Sent: *" + Math.round(helper[goalVars.helperGoal - 1] * 100) + "%*";
+                goalVars.checkTab.getRange(row, goalVars.check75).setValue("Y");
+                goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
+                goalVars.checkTab.getRange(row, goalVars.check25).setValue("Y");
+            } else if (helper[goalVars.helperGoal - 1] >= 0.5) {
+                goalVars.messageCounter++;
+                goalVars.regular50++;
+                goalVars.regular50Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Referrals Sent: *" + Math.round(helper[goalVars.helperGoal - 1] * 100) + "%*";
+                goalVars.checkTab.getRange(row, goalVars.check50).setValue("Y");
+                goalVars.checkTab.getRange(row, goalVars.check25).setValue("Y");
+            } else if (helper[goalVars.helperGoal - 1] >= 0.25) {
+                goalVars.messageCounter++;
+                goalVars.counter25++;
+                goalVars.regular25Body += "\n\n><" + helper[goalVars.helperBCLink - 1] + "|" + goalFuncs.escapeHtml(helper[goalVars.helperName - 1]) + ">\n>Referrals Sent: *" + Math.round(helper[goalVars.helperGoal - 1] * 100) + "%*";
+                goalVars.checkTab.getRange(row, goalVars.check25).setValue("Y");
+            }
         }
     },
     "sendMessage": function () {
