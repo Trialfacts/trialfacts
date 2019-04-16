@@ -7,6 +7,8 @@ var activeCellRow = activeCell.getRow(); /* get active cell row */
 var settings = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Settings"); /* get Settings sheet */
 var OutcomeCol = settings.getRange("A4").getValue(); /* get Outcome column number */
 var ReasonsCol = settings.getRange("B4").getValue(); /* get Reasons column number */
+var ddr = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Drop-Down Reasons"); /* get Drop-Down Reasons sheet */
+var ddrHeaders = ddr.getRange("1:1").getValues(); /* get all DDR headers */
 
 // FUNCTIONS
 function depDrop_(range, sourceRange) {
@@ -19,11 +21,21 @@ function whiteSpace(outCol) {
     var cell = activeSheet.getActiveRange(); // Capturing the cell that is being edited
     var noLeadingOrTrailingSpaces = cell.getValue().trim(); // Trimming the content of that cell
     cell.setValue(noLeadingOrTrailingSpaces); //Updating the cell
-
-    if (activeCellColumn == outCol && activeSheet) {
-        var cellValueNoSpacing = activeCell.getValue().replace(/[^A-Z]/ig, "") || "Blank";
+    if (activeCellColumn == outCol) {
+        ddrStartCol = 1;
+        ddrNumCol = "";
         var range = activeSheet.getRange(activeCellRow, activeCellColumn + 1);
-        var sourceRange = SpreadsheetApp.getActiveSpreadsheet().getRangeByName(cellValueNoSpacing);
+        for (i in ddrHeaders[0]) {
+            if (ddrHeaders[0][i] == "") {
+                ddrNumCol = (parseInt(i, 10) + 1);
+                break;
+            } else if (ddrHeaders[0][i] == noLeadingOrTrailingSpaces) {
+                ddrStartCol = (parseInt(i, 10) + 1);
+                ddrNumCol = 1;
+                break;
+            }
+        }
+        var sourceRange = ddr.getRange(2, ddrStartCol, 499, ddrNumCol);
         depDrop_(range, sourceRange);
     }
 }
