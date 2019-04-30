@@ -54,8 +54,8 @@ function tfredirect($atts)
         "newqs" => "",
         "newurl" => "",
         "channel" => "logs",
-        "preserve" => true,
-        "strict" => false,
+        "preserve" => "true",
+        "strict" => "false",
     ], $atts);
     /* convert preserve & strict to booleans */
     if ($redirect["preserve"] == "false") {
@@ -97,13 +97,15 @@ function tfredirect($atts)
         }
     } elseif (!$redirect["targetqs"] && !$redirect["newqs"] && $redirect["newurl"]) {
         $QSarray = processQS($qs, $redirect["preserve"], $redirect["strict"]);
-        if ($redirect["preserve"] == true) {
+        if ($redirect["preserve"] == true && $QSarray["newQS"]) {
             header("Location:" . $redirect["newurl"] . "?" . $QSarray["newQS"]);
+            $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
+            $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "?" . $QSarray["newQS"] . "\n\n";
         } else {
             header("Location:" . $redirect["newurl"]);
+            $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
+            $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "\n\n";
         }
-        $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
-        $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "\n\n";
         $message->attachments[0]->text = $QSarray["QS"];
         if (strpos($referrer, "post=11283") === false) {
             slackMessage($message, $redirect["channel"]);
@@ -142,13 +144,25 @@ function processQS($querystring, $preserve, $strict, $targetQS = null, $newQS = 
                 $extracted = preg_match('/=(.+)/', $value, $match);
                 if (!$extracted && !$strict) {
                     $result["found"] = true;
-                    $result["newQS"] .= $newQS;
-                } else {
+                    if ($result["newQS"]) {
+                        $result["newQS"] .= "&" . $newQS;
+                    } else {
+                        $result["newQS"] .= $newQS;
+                    }
+                } else if ($extracted && $strict) {
                     $result["found"] = true;
-                    $result["newQS"] .= $newQS . "=" . $match[1];
+                    if ($result["newQS"]) {
+                        $result["newQS"] .= "&" . $newQS . "=" . $match[1];
+                    } else {
+                        $result["newQS"] .= $newQS . "=" . $match[1];
+                    }
                 }
             } else if ($preserve) /* checks if preserve is true */ {
-                $result["newQS"] .= $value;
+                if ($result["newQS"]) {
+                    $result["newQS"] .= "&" . $value;
+                } else {
+                    $result["newQS"] .= $value;
+                }
             }
             /* compile query string for the slack message */
             end($array);
@@ -156,11 +170,15 @@ function processQS($querystring, $preserve, $strict, $targetQS = null, $newQS = 
                 $pos = strpos($value, "=");
                 if ($pos !== false) {
                     $result["QS"] .= substr_replace($value, ": ", $pos, strlen("="));
+                } else {
+                    $result["QS"] .= $value;
                 }
             } else {
                 $pos = strpos($value, "=");
                 if ($pos !== false) {
                     $result["QS"] .= substr_replace($value, ": ", $pos, strlen("=")) . "\n";
+                } else {
+                    $result["QS"] .= $value . "\n";
                 }
             }
         }
@@ -176,11 +194,15 @@ function processQS($querystring, $preserve, $strict, $targetQS = null, $newQS = 
                 $pos = strpos($value, "=");
                 if ($pos !== false) {
                     $result["QS"] .= substr_replace($value, ": ", $pos, strlen("="));
+                } else {
+                    $result["QS"] .= $value;
                 }
             } else {
                 $pos = strpos($value, "=");
                 if ($pos !== false) {
                     $result["QS"] .= substr_replace($value, ": ", $pos, strlen("=")) . "\n";
+                } else {
+                    $result["QS"] .= $value . "\n";
                 }
             }
         }
