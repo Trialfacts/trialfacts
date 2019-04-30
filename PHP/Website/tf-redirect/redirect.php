@@ -54,37 +54,60 @@ function tfredirect($atts)
         "newqs" => "",
         "newurl" => "",
         "channel" => "logs",
+        "preserve" => true,
+        "strict" => false,
     ], $atts);
+    /* convert preserve & strict to booleans */
+    if ($redirect["preserve"] == "false") {
+        $redirect["preserve"] = false;
+    } else {
+        $redirect["preserve"] = true;
+    }
+    if ($redirect["strict"] == "true") {
+        $redirect["strict"] = true;
+    } else {
+        $redirect["strict"] = false;
+    }
 
     if ($redirect["targetqs"] && $redirect["newqs"] && $redirect["newurl"]) {
         if ($redirect["referrer"] && strpos($referrer, $redirect["referrer"]) !== false) {
-            $QSarray = processQS($qs, $redirect["targetqs"], $redirect["newqs"]);
+            $QSarray = processQS($qs, $redirect["preserve"], $redirect["strict"], $redirect["targetqs"], $redirect["newqs"]);
             if ($QSarray["found"]) {
                 header("Location:" . $redirect["newurl"] . "?" . $QSarray["newQS"]);
                 $message->attachments[0]->text = $QSarray["QS"];
                 $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
                 $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "?" . $QSarray["newQS"] . "\n\n";
-                slackMessage($message, $redirect["channel"]);
+                if (strpos($referrer, "post=11283") === false) {
+                    slackMessage($message, $redirect["channel"]);
+                }
                 $redirected = true;
             }
         } elseif (!$redirect["referrer"]) {
-            $QSarray = processQS($qs, $redirect["targetqs"], $redirect["newqs"]);
+            $QSarray = processQS($qs, $redirect["preserve"], $redirect["strict"], $redirect["targetqs"], $redirect["newqs"]);
             if ($QSarray["found"]) {
                 header("Location:" . $redirect["newurl"] . "?" . $QSarray["newQS"]);
                 $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
                 $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "?" . $QSarray["newQS"] . "\n\n";
                 $message->attachments[0]->text = $QSarray["QS"];
-                slackMessage($message, $redirect["channel"]);
+                if (strpos($referrer, "post=11283") === false) {
+                    slackMessage($message, $redirect["channel"]);
+                }
                 $redirected = true;
             }
         }
     } elseif (!$redirect["targetqs"] && !$redirect["newqs"] && $redirect["newurl"]) {
-        $QSarray = processQS($qs);
-        header("Location:" . $redirect["newurl"]);
+        $QSarray = processQS($qs, $redirect["preserve"], $redirect["strict"]);
+        if ($redirect["preserve"] == true) {
+            header("Location:" . $redirect["newurl"] . "?" . $QSarray["newQS"]);
+        } else {
+            header("Location:" . $redirect["newurl"]);
+        }
         $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
         $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "\n\n";
         $message->attachments[0]->text = $QSarray["QS"];
-        slackMessage($message, $redirect["channel"]);
+        if (strpos($referrer, "post=11283") === false) {
+            slackMessage($message, $redirect["channel"]);
+        }
         $redirected = true;
     }
 }
@@ -98,7 +121,7 @@ add_shortcode("tfredirect", "tfredirect");
  * be used on notification
  * returns result array
  */
-function processQS($querystring, $targetQS = null, $newQS = null)
+function processQS($querystring, $preserve, $strict, $targetQS = null, $newQS = null)
 {
     /*
      * result array
@@ -108,33 +131,57 @@ function processQS($querystring, $targetQS = null, $newQS = null)
     $result["found"] = false;
     $result["newQS"] = "";
 
+    /* check if query string & target query string & new query string exists */
     if ($querystring && $targetQS && $newQS) {
+        /* explodes query string */
         $array = explode("&", $querystring);
+        /* loop through each query string value */
         foreach ($array as $key => $value) {
-            if (strpos($value, $targetQS) !== false) {
-                $result["found"] = true;
+            /* looks for the target query string */
+            if (strpos($value, $targetQS) !== false) /* checks if target query string is found */ {
                 $extracted = preg_match('/=(.+)/', $value, $match);
-                if (!$extracted) {
-                    $result["newQS"] = $newQS;
+                if (!$extracted && !$strict) {
+                    $result["found"] = true;
+                    $result["newQS"] .= $newQS;
                 } else {
-                    $result["newQS"] = $newQS . "=" . $match[1];
+                    $result["found"] = true;
+                    $result["newQS"] .= $newQS . "=" . $match[1];
+                }
+            } else if ($preserve) /* checks if preserve is true */ {
+                $result["newQS"] .= $value;
+            }
+            /* compile query string for the slack message */
+            end($array);
+            if ($key === key($array)) {
+                $pos = strpos($value, "=");
+                if ($pos !== false) {
+                    $result["QS"] .= substr_replace($value, ": ", $pos, strlen("="));
+                }
+            } else {
+                $pos = strpos($value, "=");
+                if ($pos !== false) {
+                    $result["QS"] .= substr_replace($value, ": ", $pos, strlen("=")) . "\n";
                 }
             }
-            end($array);
-            if ($key === key($array)) {
-                $result["QS"] .= str_replace("=", ": ", $value);
-            } else {
-                $result["QS"] .= str_replace("=", ": ", $value) . "\n";
-            }
         }
-    } else if ($querystring) {
+    } else if ($querystring) /* checks only for query string */ {
         $array = explode("&", $querystring);
+        if ($preserve) {
+            $result["newQS"] = $querystring;
+        }
         foreach ($array as $key => $value) {
+            /* compile query string for the slack message */
             end($array);
             if ($key === key($array)) {
-                $result["QS"] .= str_replace("=", ": ", $value);
+                $pos = strpos($value, "=");
+                if ($pos !== false) {
+                    $result["QS"] .= substr_replace($value, ": ", $pos, strlen("="));
+                }
             } else {
-                $result["QS"] .= str_replace("=", ": ", $value) . "\n";
+                $pos = strpos($value, "=");
+                if ($pos !== false) {
+                    $result["QS"] .= substr_replace($value, ": ", $pos, strlen("=")) . "\n";
+                }
             }
         }
     } else {
@@ -221,7 +268,7 @@ class PageTemplater
         );
         // Add your templates to this array.
         $this->templates = array(
-            'empty.php' => 'Empty Page',
+            'redirect_page.php' => 'Redirect Page',
         );
     }
     /**
