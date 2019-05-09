@@ -71,6 +71,7 @@ distbvalue = 0
 Q2new = 0
 laten = 0
 daydys = 0
+daydyssub = 0
 Q3Q1Diff = 0
 hse = 0
 hsevalue = 0
@@ -132,7 +133,18 @@ end
 
 log("laten: " .. laten)
 
-daydys = Q8 + Q9
+daydyssub = Q8 + Q9
+log("daydys: " .. daydys)
+if daydyssub <=0 then
+  daydys = 0
+elseif daydyssub < 3 then
+  daydys = 1
+elseif daydyssub < 5 then
+  daydys = 2
+elseif daydyssub >= 5 then
+  daydys = 3
+end
+log("daydyssub: " .. daydyssub)
 log("daydys: " .. daydys)
 
 if (AMPM == "PM") then
@@ -190,3 +202,4 @@ elseif totalvalue < 5 then
 end
 
 log("Script End")
+
