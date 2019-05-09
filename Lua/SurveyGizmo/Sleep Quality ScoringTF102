@@ -1,0 +1,192 @@
+logging = false
+
+function log(var)
+    if logging == true then
+        print(var)
+    end
+end
+
+log("Script Start")
+
+
+
+-- Check tf102 spreadsheet formula from client
+Q1Hour = tonumber(string.match(getvalue(252), "^(%d+):"))
+log("Q1Hour: " .. Q1Hour)
+Q1Min = tonumber(string.match(getvalue(252), ":(%d+)$"))
+log("Q1Min: " .. Q1Min)
+Q2 = tonumber(getvalue(216))
+log("Q2: " .. Q2)
+Q3Hour = tonumber(string.match(getvalue(264), "^(%d+):"))
+log("Q3Hour: " .. Q3Hour)
+Q3Min = tonumber(string.match(getvalue(264), ":(%d+)$"))
+log("Q3Min: " .. Q3Min)
+Q4 = tonumber(getvalue(218))
+log("Q4: " .. Q4)
+Q5a = tonumber(getvalue(220))
+log("Q5a: " .. Q5a)
+Q5b = tonumber(getvalue(221))
+log("Q5b: " .. Q5b)
+Q5c = tonumber(getvalue(222))
+log("Q5c: " .. Q5c)
+Q5d = tonumber(getvalue(223))
+log("Q5d: " .. Q5d)
+Q5e = tonumber(getvalue(224))
+log("Q5e: " .. Q5e)
+Q5f = tonumber(getvalue(225))
+log("Q5f: " .. Q5f)
+Q5g = tonumber(getvalue(226))
+log("Q5g: " .. Q5g)
+Q5h = tonumber(getvalue(227))
+log("Q5h: " .. Q5h)
+Q5i = tonumber(getvalue(228))
+log("Q5i: " .. Q5i)
+Q5j = tonumber(getvalue(229))
+log("Q5j: " .. Q5j)
+Q6 = tonumber(getvalue(235))
+log("Q6: " .. Q6)
+Q7 = tonumber(getvalue(230))
+log("Q7: " .. Q7)
+Q8 = tonumber(getvalue(231))
+log("Q8: " .. Q8)
+Q9 = tonumber(getvalue(232))
+log("Q9: " .. Q9)
+
+AMPM = getvalue(267)
+totalvalueid = 263
+sleepPassFail = 262
+duratid = 268
+distbid = 269
+latenid = 270
+daysdysid = 271
+hseid = 272
+slpqualid = 273
+medsid = 274
+
+
+totalvalue = 0
+durat = 0
+distb=0
+distbvalue = 0
+Q2new = 0
+laten = 0
+daydys = 0
+Q3Q1Diff = 0
+hse = 0
+hsevalue = 0
+slpqual = 0
+meds = 0
+latensubtotal = 0
+
+Q1 = Q1Hour + Q1Min / 60
+log("Q1: " .. Q1)
+Q3 = Q3Hour + Q3Min / 60
+log("Q3: " .. Q3)
+
+if Q4 > 6.9 then
+    durat = 0
+elseif Q4 > 5.9 then
+    durat = 1
+elseif Q4 > 4.9 then
+    durat = 2
+elseif Q4 >= 0 then
+    durat = 3
+end
+log("durat: " .. durat)
+
+distb = Q5b + Q5c + Q5d + Q5e + Q5f + Q5g + Q5h + Q5i + Q5j
+if distb <= 0 then
+  distbvalue = 0
+elseif distb < 10 then
+  distbvalue = 1
+elseif distb < 19 then
+  distbvalue = 2
+elseif distb >= 19 then
+  distbvalue = 3
+end
+  
+log("distb: " .. distb)
+log("distbvalue:" .. distbvalue)
+
+if Q2 <= 15 then
+    Q2new = 0
+elseif Q2 <= 30 then
+    Q2new = 1
+elseif Q2 <= 60 then
+    Q2new = 2
+elseif Q2 > 60 then
+    Q2new = 3
+end
+log("Q2new: " .. Q2new)
+
+latensubtotal = Q2new + Q5a
+if latensubtotal <= 0 then
+  laten = 0
+elseif latensubtotal < 3 then
+  laten = 1
+elseif latensubtotal < 5 then
+  laten = 2
+elseif latensubtotal >= 5 then
+  laten = 3
+end
+
+log("laten: " .. laten)
+
+daydys = Q8 + Q9
+log("daydys: " .. daydys)
+
+if (AMPM == "PM") then
+Q3Q1Diff = Q3 + (12 - Q1)
+log("Q3Q1Diff: " .. Q3Q1Diff)
+elseif (AMPM == "AM") and (Q3 > Q1) then
+Q3Q1Diff = Q3 - Q1
+elseif (AMPM == "AM") and (Q3 < Q1) then
+Q3Q1Diff = Q3 + (24 - Q1)
+end
+log("q3q1diff: " .. Q3Q1Diff)
+
+hse = Q4 / Q3Q1Diff * 100
+log("hse: " .. hse)
+
+if hse > 84 then
+  hsevalue = 0
+elseif hse > 74 then
+  hsevalue = 1
+elseif hse > 64 then
+  hsevalue = 2
+elseif hse <=64 then
+  hsevalue = 3
+end
+
+log("hsevalue: " .. hsevalue)
+
+slpqual = Q6
+
+log("slpqual: " .. slpqual)
+
+meds = Q7
+
+log("meds: " .. meds)
+
+totalvalue = durat + distbvalue + laten + daydys + hsevalue + slpqual + meds
+log("totalvalue: " .. totalvalue)
+
+setvalue(totalvalueid, totalvalue)
+setvalue(duratid, durat)
+setvalue(distbid, distbvalue)
+setvalue(latenid, laten)
+setvalue(daysdysid, daydys)
+setvalue(hseid, hsevalue)
+setvalue(slpqualid, slpqual)
+setvalue(medsid, meds)
+
+
+if totalvalue >= 5 then
+    setvalue(sleepPassFail, "Pass")
+    log("pass")
+elseif totalvalue < 5 then
+    setvalue(sleepPassFail, "Fail")
+    log("fail")
+end
+
+log("Script End")
