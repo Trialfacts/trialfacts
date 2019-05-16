@@ -37,80 +37,82 @@ require "slack.php";
 // SHORTCODE
 function tfredirect($atts)
 {
-    global $redirected;
-    if ($redirected) {
-        exit;
-    }
-    global $qs;
-    global $message;
     global $referrer;
-    // normalize attribute keys, lowercase
-    $atts = array_change_key_case((array) $atts, CASE_LOWER);
-
-    // override default attributes with user attributes
-    $redirect = shortcode_atts([
-        "targetqs" => "",
-        "referrer" => "",
-        "newqs" => "",
-        "newurl" => "",
-        "channel" => "logs",
-        "preserve" => "true",
-        "strict" => "false",
-    ], $atts);
-    /* convert preserve & strict to booleans */
-    if ($redirect["preserve"] == "false") {
-        $redirect["preserve"] = false;
-    } else {
-        $redirect["preserve"] = true;
-    }
-    if ($redirect["strict"] == "true") {
-        $redirect["strict"] = true;
-    } else {
-        $redirect["strict"] = false;
-    }
-
-    if ($redirect["targetqs"] && $redirect["newqs"] && $redirect["newurl"]) {
-        if ($redirect["referrer"] && strpos($referrer, $redirect["referrer"]) !== false) {
-            $QSarray = processQS($qs, $redirect["preserve"], $redirect["strict"], $redirect["targetqs"], $redirect["newqs"]);
-            if ($QSarray["found"]) {
-                header("Location:" . $redirect["newurl"] . "?" . $QSarray["newQS"]);
-                $message->attachments[0]->text = $QSarray["QS"];
-                $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
-                $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "?" . $QSarray["newQS"] . "\n\n";
-                if (strpos($referrer, "post=11283") === false) {
-                    slackMessage($message, $redirect["channel"]);
-                }
-                $redirected = true;
-            }
-        } elseif (!$redirect["referrer"]) {
-            $QSarray = processQS($qs, $redirect["preserve"], $redirect["strict"], $redirect["targetqs"], $redirect["newqs"]);
-            if ($QSarray["found"]) {
-                header("Location:" . $redirect["newurl"] . "?" . $QSarray["newQS"]);
-                $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
-                $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "?" . $QSarray["newQS"] . "\n\n";
-                $message->attachments[0]->text = $QSarray["QS"];
-                if (strpos($referrer, "post=11283") === false) {
-                    slackMessage($message, $redirect["channel"]);
-                }
-                $redirected = true;
-            }
+    if (strpos($referrer, "/wp/wp-admin/edit.php") === false) {
+        global $redirected;
+        if ($redirected) {
+            exit;
         }
-    } elseif (!$redirect["targetqs"] && !$redirect["newqs"] && $redirect["newurl"]) {
-        $QSarray = processQS($qs, $redirect["preserve"], $redirect["strict"]);
-        if ($redirect["preserve"] == true && $QSarray["newQS"]) {
-            header("Location:" . $redirect["newurl"] . "?" . $QSarray["newQS"]);
-            $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
-            $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "?" . $QSarray["newQS"] . "\n\n";
+        global $qs;
+        global $message;
+        // normalize attribute keys, lowercase
+        $atts = array_change_key_case((array) $atts, CASE_LOWER);
+
+        // override default attributes with user attributes
+        $redirect = shortcode_atts([
+            "targetqs" => "",
+            "referrer" => "",
+            "newqs" => "",
+            "newurl" => "",
+            "channel" => "logs",
+            "preserve" => "true",
+            "strict" => "false",
+        ], $atts);
+        /* convert preserve & strict to booleans */
+        if ($redirect["preserve"] == "false") {
+            $redirect["preserve"] = false;
         } else {
-            header("Location:" . $redirect["newurl"]);
-            $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
-            $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "\n\n";
+            $redirect["preserve"] = true;
         }
-        $message->attachments[0]->text = $QSarray["QS"];
-        if (strpos($referrer, "post=11283") === false) {
-            slackMessage($message, $redirect["channel"]);
+        if ($redirect["strict"] == "true") {
+            $redirect["strict"] = true;
+        } else {
+            $redirect["strict"] = false;
         }
-        $redirected = true;
+
+        if ($redirect["targetqs"] && $redirect["newqs"] && $redirect["newurl"]) {
+            if ($redirect["referrer"] && strpos($referrer, $redirect["referrer"]) !== false) {
+                $QSarray = processQS($qs, $redirect["preserve"], $redirect["strict"], $redirect["targetqs"], $redirect["newqs"]);
+                if ($QSarray["found"]) {
+                    header("Location:" . $redirect["newurl"] . "?" . $QSarray["newQS"]);
+                    $message->attachments[0]->text = $QSarray["QS"];
+                    $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
+                    $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "?" . $QSarray["newQS"] . "\n\n";
+                    if (strpos($referrer, "/wp/wp-admin/post.php") === false) {
+                        slackMessage($message, $redirect["channel"]);
+                    }
+                    $redirected = true;
+                }
+            } elseif (!$redirect["referrer"]) {
+                $QSarray = processQS($qs, $redirect["preserve"], $redirect["strict"], $redirect["targetqs"], $redirect["newqs"]);
+                if ($QSarray["found"]) {
+                    header("Location:" . $redirect["newurl"] . "?" . $QSarray["newQS"]);
+                    $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
+                    $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "?" . $QSarray["newQS"] . "\n\n";
+                    $message->attachments[0]->text = $QSarray["QS"];
+                    if (strpos($referrer, "/wp/wp-admin/post.php") === false) {
+                        slackMessage($message, $redirect["channel"]);
+                    }
+                    $redirected = true;
+                }
+            }
+        } elseif (!$redirect["targetqs"] && !$redirect["newqs"] && $redirect["newurl"]) {
+            $QSarray = processQS($qs, $redirect["preserve"], $redirect["strict"]);
+            if ($redirect["preserve"] == true && $QSarray["newQS"]) {
+                header("Location:" . $redirect["newurl"] . "?" . $QSarray["newQS"]);
+                $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
+                $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "?" . $QSarray["newQS"] . "\n\n";
+            } else {
+                header("Location:" . $redirect["newurl"]);
+                $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
+                $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "\n\n";
+            }
+            $message->attachments[0]->text = $QSarray["QS"];
+            if (strpos($referrer, "/wp/wp-admin/post.php") === false) {
+                slackMessage($message, $redirect["channel"]);
+            }
+            $redirected = true;
+        }
     }
 }
 add_shortcode("tfredirect", "tfredirect");
@@ -149,7 +151,7 @@ function processQS($querystring, $preserve, $strict, $targetQS = null, $newQS = 
                     } else {
                         $result["newQS"] .= $newQS;
                     }
-                } else if ($extracted && $strict) {
+                } else if ($extracted) {
                     $result["found"] = true;
                     if ($result["newQS"]) {
                         $result["newQS"] .= "&" . $newQS . "=" . $match[1];
