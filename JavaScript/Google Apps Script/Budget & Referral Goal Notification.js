@@ -343,6 +343,9 @@ function goalCheck() {
             if (goalVars.pilotCompleteCounter > 0 || goalVars.regularCompleteCounter > 0) {
                 goalVars.message.text += slackUser("ragnar");
             }
+            if (goalVars.counter85 > 0) {
+                goalVars.message.text += slackUser("elyssa");
+            }
             // studies below
             if (goalVars.pilotCompleteCounter > 0) {
                 goalVars.message.text += goalVars.pilot100Body;

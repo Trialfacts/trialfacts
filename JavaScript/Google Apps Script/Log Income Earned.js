@@ -9,6 +9,7 @@ function logIncomeEarned() {
     var invoiceColumn = settings[6][1];
     var incomeEarnedColumn = settings[6][2];
     var dataStartRow = settings[6][3];
+    var paymentTypeColumn = settings[6][5];
     var academicData = academicTab.getDataRange().getValues();
     var researchSiteData = researchSiteTab.getDataRange().getValues();
     var sponsorData = sponsorTab.getDataRange().getValues();
@@ -30,8 +31,7 @@ function logIncomeEarned() {
         "Nov",
         "Dec"
     ]
-    var day = nth(date.getDate());
-    var month = months[date.getMonth()];
+    var month = months[(date.getMonth() - 1)];
     var year = date.getFullYear();
 
     // FUNCTIONS
@@ -70,6 +70,9 @@ function logIncomeEarned() {
         if (i < (dataStartRow - 1)) {
             academicData.splice(i, 1);
         } else if (academicData[i][0]) {
+            if (academicData[i][paymentTypeColumn - 1] == "Post Pay") {
+                academicData[i][invoiceColumn - 1] = "";
+            }
             for (var x = (academicData[0].length - 1); x >= 0; x--) {
                 if (x != (campaignColumn - 1) && x != (invoiceColumn - 1) && x != (incomeEarnedColumn - 1)) {
                     academicData[i].splice(x, 1);
@@ -89,6 +92,9 @@ function logIncomeEarned() {
         if (i < (dataStartRow - 1)) {
             researchSiteData.splice(i, 1);
         } else if (researchSiteData[i][0]) {
+            if (researchSiteData[i][paymentTypeColumn - 1] == "Post Pay") {
+                researchSiteData[i][invoiceColumn - 1] = "";
+            }
             for (var x = (researchSiteData[0].length - 1); x >= 0; x--) {
                 if (x != (campaignColumn - 1) && x != (invoiceColumn - 1) && x != (incomeEarnedColumn - 1)) {
                     researchSiteData[i].splice(x, 1);
@@ -108,6 +114,9 @@ function logIncomeEarned() {
         if (i < (dataStartRow - 1)) {
             sponsorData.splice(i, 1);
         } else if (sponsorData[i][0]) {
+            if (sponsorData[i][paymentTypeColumn - 1] == "Post Pay") {
+                sponsorData[i][invoiceColumn - 1] = "";
+            }
             for (var x = (sponsorData[0].length - 1); x >= 0; x--) {
                 if (x != (campaignColumn - 1) && x != (invoiceColumn - 1) && x != (incomeEarnedColumn - 1)) {
                     sponsorData[i].splice(x, 1);
@@ -141,9 +150,9 @@ function logIncomeEarned() {
     sponsorNumberFormats.unshift(["@", "@", "@"]);
 
     /* set month & year in first row */
-    academicData.unshift(["Income Earned as at " + day + " of " + month + " " + year, "", ""]);
-    researchSiteData.unshift(["Income Earned as at " + day + " of " + month + " " + year, "", ""]);
-    sponsorData.unshift(["Income Earned as at " + day + " of " + month + " " + year, "", ""]);
+    academicData.unshift(["Income Earned as at end of " + month + " " + year, "", ""]);
+    researchSiteData.unshift(["Income Earned as at end of " + month + " " + year, "", ""]);
+    sponsorData.unshift(["Income Earned as at end of " + month + " " + year, "", ""]);
     academicHorizontalAlignments.unshift(["center", "center", "center"]);
     researchSiteHorizontalAlignments.unshift(["center", "center", "center"]);
     sponsorHorizontalAlignments.unshift(["center", "center", "center"]);
@@ -180,16 +189,16 @@ function logIncomeEarned() {
     sponsorTab.getRange(1, blankColumnSponsor, 2, 3).setBorder(true, true, true, true, true, true);
 
     academicTab.getRange(3, blankColumnAcademic, academicMaxRows, 1).setBorder(true, true, true, true, null, null);
-    researchSiteTab.getRange(3, blankColumnResearchSite, academicMaxRows, 1).setBorder(true, true, true, true, null, null);
-    sponsorTab.getRange(3, blankColumnSponsor, academicMaxRows, 1).setBorder(true, true, true, true, null, null);
+    researchSiteTab.getRange(3, blankColumnResearchSite, researchSiteMaxRows, 1).setBorder(true, true, true, true, null, null);
+    sponsorTab.getRange(3, blankColumnSponsor, sponsorMaxRows, 1).setBorder(true, true, true, true, null, null);
 
     academicTab.getRange(3, (blankColumnAcademic + 1), academicMaxRows, 1).setBorder(true, true, true, true, null, null);
-    researchSiteTab.getRange(3, (blankColumnResearchSite + 1), academicMaxRows, 1).setBorder(true, true, true, true, null, null);
-    sponsorTab.getRange(3, (blankColumnSponsor + 1), academicMaxRows, 1).setBorder(true, true, true, true, null, null);
+    researchSiteTab.getRange(3, (blankColumnResearchSite + 1), researchSiteMaxRows, 1).setBorder(true, true, true, true, null, null);
+    sponsorTab.getRange(3, (blankColumnSponsor + 1), sponsorMaxRows, 1).setBorder(true, true, true, true, null, null);
 
     academicTab.getRange(3, (blankColumnAcademic + 2), academicMaxRows, 1).setBorder(true, true, true, true, null, null);
-    researchSiteTab.getRange(3, (blankColumnResearchSite + 2), academicMaxRows, 1).setBorder(true, true, true, true, null, null);
-    sponsorTab.getRange(3, (blankColumnSponsor + 2), academicMaxRows, 1).setBorder(true, true, true, true, null, null);
+    researchSiteTab.getRange(3, (blankColumnResearchSite + 2), researchSiteMaxRows, 1).setBorder(true, true, true, true, null, null);
+    sponsorTab.getRange(3, (blankColumnSponsor + 2), sponsorMaxRows, 1).setBorder(true, true, true, true, null, null);
 }
 
 function addMenu() {
