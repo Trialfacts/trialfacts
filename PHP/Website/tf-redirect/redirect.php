@@ -57,8 +57,10 @@ function tfredirect($atts)
             "channel" => "logs",
             "preserve" => "true",
             "strict" => "false",
+            "nomsg" => "false",
+            "header" => "",
         ], $atts);
-        /* convert preserve & strict to booleans */
+        /* convert preserve, strict, & nomsg to booleans */
         if ($redirect["preserve"] == "false") {
             $redirect["preserve"] = false;
         } else {
@@ -69,6 +71,11 @@ function tfredirect($atts)
         } else {
             $redirect["strict"] = false;
         }
+        if ($redirect["nomsg"] == "true") {
+            $redirect["nomsg"] = true;
+        } else {
+            $redirect["nomsg"] = false;
+        }
 
         if ($redirect["targetqs"] && $redirect["newqs"] && $redirect["newurl"]) {
             if ($redirect["referrer"] && strpos($referrer, $redirect["referrer"]) !== false) {
@@ -78,7 +85,7 @@ function tfredirect($atts)
                     $message->attachments[0]->text = $QSarray["QS"];
                     $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
                     $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "?" . $QSarray["newQS"] . "\n\n";
-                    if (strpos($referrer, "/wp/wp-admin/post.php") === false) {
+                    if (strpos($referrer, "/wp/wp-admin/post.php") === false && !$redirect["nomsg"]) {
                         slackMessage($message, $redirect["channel"]);
                     }
                     $redirected = true;
@@ -90,7 +97,7 @@ function tfredirect($atts)
                     $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
                     $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "?" . $QSarray["newQS"] . "\n\n";
                     $message->attachments[0]->text = $QSarray["QS"];
-                    if (strpos($referrer, "/wp/wp-admin/post.php") === false) {
+                    if (strpos($referrer, "/wp/wp-admin/post.php") === false && !$redirect["nomsg"]) {
                         slackMessage($message, $redirect["channel"]);
                     }
                     $redirected = true;
@@ -108,7 +115,7 @@ function tfredirect($atts)
                 $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "\n\n";
             }
             $message->attachments[0]->text = $QSarray["QS"];
-            if (strpos($referrer, "/wp/wp-admin/post.php") === false) {
+            if (strpos($referrer, "/wp/wp-admin/post.php") === false && !$redirect["nomsg"]) {
                 slackMessage($message, $redirect["channel"]);
             }
             $redirected = true;
