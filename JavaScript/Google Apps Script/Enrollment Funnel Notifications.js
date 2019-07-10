@@ -166,7 +166,7 @@ function checkFunnel(scheduled) {
             /*  Convert the JavaScript object to a JSON string. */
             'payload': JSON.stringify(message)
         }
-        UrlFetchApp.fetch('https://hooks.slack.com/services/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', options);
+        UrlFetchApp.fetch(slackChannel("recruitment"), options);
         scriptProperties.setProperties(studyStatus);
     }
     if (scheduled == true) {
@@ -177,7 +177,7 @@ function checkFunnel(scheduled) {
             /*  Convert the JavaScript object to a JSON string. */
             'payload': JSON.stringify(message)
         }
-        UrlFetchApp.fetch('https://hooks.zapier.com/hooks/catch/79481/qcvi8h/', options);
+        UrlFetchApp.fetch(zapHooks("funnel"), options);
         scriptProperties.setProperties(studyStatus);
     }
 }
