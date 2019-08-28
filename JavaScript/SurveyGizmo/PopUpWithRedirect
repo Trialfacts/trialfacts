@@ -1,0 +1,12 @@
+document.getElementById("confirmMsg").addEventListener("click", confirmation);
+
+function confirmation() {
+  var ask = window.confirm("Before you go! \nAre you sure you do not want to confirm a time now to join one of the  information sessions? \n\nDuring this information session, the research coordinator, Monica Jane, will share with you further details about the study and what will be asked of you and your child as well as invite you to ask any questions you may have. \n\nIf you need more time to decide on which information session to join, please book in a time for a brief phone call with Monica by clicking OK");
+    if (ask) {
+        window.location.href = "[survey('edit link')]&__sgtarget=16";
+    }
+  else {
+    window.location.href = "[survey('edit link')]&__sgtarget=10";
+  }
+
+}
