@@ -1,0 +1,13 @@
+document.getElementById("sgE-5184211-4-33-10040").addEventListener("click", alertMsg);
+
+function alertMsg() {
+  var feet = parseFloat(document.getElementById('sgE-5184211-4-117-element').value);
+  var inches = parseFloat(document.getElementById('sgE-5184211-4-118-element').value);
+  var weight = parseFloat(document.getElementById('sgE-5184211-4-127-element').value);
+  var height = feet*12 + inches;
+  var bmi = (weight/(height*height))*703;
+  
+  if (bmi >= 40) {
+  alert("Please note that the research team may not be able to conduct the necessary biopsy procedure based on the information you have provided. The study staff will be able to evaluate during the first clinic visit and at that point will have to determine if they can move forward.");
+  }
+}
