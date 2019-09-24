@@ -16,6 +16,9 @@ if (!$referrer) {
     $referrer = "None";
 }
 $useragent = $_SERVER["HTTP_USER_AGENT"];
+if ($useragent == "Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)" || $useragent == "WordPress") {
+    exit;
+}
 $qs = $_SERVER["QUERY_STRING"]; /* query string variable */
 $redirected = false;
 /* message object */
@@ -178,16 +181,16 @@ function processQS($querystring, $preserve, $strict, $targetQS = null, $newQS = 
             if ($key === key($array)) {
                 $pos = strpos($value, "=");
                 if ($pos !== false) {
-                    $result["QS"] .= substr_replace($value, ": ", $pos, strlen("="));
+                    $result["QS"] .= substr_replace(urldecode($value), ": ", $pos, strlen("="));
                 } else {
-                    $result["QS"] .= $value;
+                    $result["QS"] .= urldecode($value);
                 }
             } else {
                 $pos = strpos($value, "=");
                 if ($pos !== false) {
-                    $result["QS"] .= substr_replace($value, ": ", $pos, strlen("=")) . "\n";
+                    $result["QS"] .= substr_replace(urldecode($value), ": ", $pos, strlen("=")) . "\n";
                 } else {
-                    $result["QS"] .= $value . "\n";
+                    $result["QS"] .= urldecode($value) . "\n";
                 }
             }
         }
@@ -202,16 +205,16 @@ function processQS($querystring, $preserve, $strict, $targetQS = null, $newQS = 
             if ($key === key($array)) {
                 $pos = strpos($value, "=");
                 if ($pos !== false) {
-                    $result["QS"] .= substr_replace($value, ": ", $pos, strlen("="));
+                    $result["QS"] .= substr_replace(urldecode($value), ": ", $pos, strlen("="));
                 } else {
-                    $result["QS"] .= $value;
+                    $result["QS"] .= urldecode($value);
                 }
             } else {
                 $pos = strpos($value, "=");
                 if ($pos !== false) {
-                    $result["QS"] .= substr_replace($value, ": ", $pos, strlen("=")) . "\n";
+                    $result["QS"] .= substr_replace(urldecode($value), ": ", $pos, strlen("=")) . "\n";
                 } else {
-                    $result["QS"] .= $value . "\n";
+                    $result["QS"] .= urldecode($value) . "\n";
                 }
             }
         }
