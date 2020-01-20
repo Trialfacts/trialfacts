@@ -8,107 +8,74 @@
  * Author URI: https://www.trialfacts.com/
  */
 
-// VARIABLES
-/* server variables */
-$ipaddress = $_SERVER["REMOTE_ADDR"];
-$referrer = $_SERVER["HTTP_REFERER"];
-if (!$referrer) {
-    $referrer = "None";
-}
-$useragent = $_SERVER["HTTP_USER_AGENT"];
-if ($useragent == "Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)" || $useragent == "WordPress") {
-    exit;
-}
-$qs = $_SERVER["QUERY_STRING"]; /* query string variable */
-$redirected = false;
-/* message object */
-$message = json_decode('{
-    "text": "*PAGE REDIRECT*>\n\n>*VISITOR INFO:*\n",
-    "attachments": [
-        {
-            "fallback": "QUERY STRING",
-            "color": "#75be09",
-            "title": "QUERY STRING",
-            "text": ""
-        }
-    ]
-}');
-$message->text .= ">IP: " . $ipaddress . "\n>Referrer: " . $referrer . "\n>User Agent: " . $useragent;
-/* slack webhooks */
-require "slack.php";
-
 // SHORTCODE
 function tfredirect($atts)
 {
-    global $referrer;
-    if (strpos($referrer, "/wp/wp-admin/edit.php") === false) {
-        global $redirected;
-        if ($redirected) {
-            exit;
-        }
-        global $qs;
-        global $message;
-        // normalize attribute keys, lowercase
-        $atts = array_change_key_case((array) $atts, CASE_LOWER);
-
-        // override default attributes with user attributes
-        $redirect = shortcode_atts([
-            "targetqs" => "",
-            "referrer" => "",
-            "newqs" => "",
-            "newurl" => "",
-            "channel" => "logs",
-            "preserve" => "true",
-            "strict" => "false",
-            "nomsg" => "false",
-            "header" => "",
-        ], $atts);
-        /* convert preserve, strict, & nomsg to booleans */
-        if ($redirect["preserve"] == "false") {
-            $redirect["preserve"] = false;
-        } else {
-            $redirect["preserve"] = true;
-        }
-        if ($redirect["strict"] == "true") {
-            $redirect["strict"] = true;
-        } else {
-            $redirect["strict"] = false;
-        }
-        if ($redirect["nomsg"] == "true") {
-            $redirect["nomsg"] = true;
-        } else {
-            $redirect["nomsg"] = false;
-        }
-
-        if ($redirect["targetqs"] && $redirect["newqs"] && $redirect["newurl"]) {
-            if ($redirect["referrer"] && strpos($referrer, $redirect["referrer"]) !== false) {
-                $QSarray = processQS($qs, $redirect["preserve"], $redirect["strict"], $redirect["targetqs"], $redirect["newqs"]);
-                if ($QSarray["found"]) {
-                    header("Location:" . $redirect["newurl"] . "?" . $QSarray["newQS"]);
-                    $message->attachments[0]->text = $QSarray["QS"];
-                    $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
-                    $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "?" . $QSarray["newQS"] . "\n\n";
-                    if (strpos($referrer, "/wp/wp-admin/post.php") === false && !$redirect["nomsg"]) {
-                        slackMessage($message, $redirect["channel"]);
-                    }
-                    $redirected = true;
-                }
-            } elseif (!$redirect["referrer"]) {
-                $QSarray = processQS($qs, $redirect["preserve"], $redirect["strict"], $redirect["targetqs"], $redirect["newqs"]);
-                if ($QSarray["found"]) {
-                    header("Location:" . $redirect["newurl"] . "?" . $QSarray["newQS"]);
-                    $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
-                    $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "?" . $QSarray["newQS"] . "\n\n";
-                    $message->attachments[0]->text = $QSarray["QS"];
-                    if (strpos($referrer, "/wp/wp-admin/post.php") === false && !$redirect["nomsg"]) {
-                        slackMessage($message, $redirect["channel"]);
-                    }
-                    $redirected = true;
-                }
+    // VARIABLES
+    /* server variables */
+    $ipaddress = $_SERVER["REMOTE_ADDR"];
+    if (isset($_SERVER["HTTP_REFERER"])) {
+        $referrer = $_SERVER["HTTP_REFERER"];
+    } else {
+        $referrer = "None";
+    }
+    $useragent = $_SERVER["HTTP_USER_AGENT"];
+    if ($useragent == "Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)" || $useragent == "WordPress") {
+        exit;
+    }
+    $qs = $_SERVER["QUERY_STRING"]; /* query string variable */
+    /* message object */
+    $message = json_decode('{
+        "text": "*PAGE REDIRECT*>\n\n>*VISITOR INFO:*\n",
+        "attachments": [
+            {
+                "fallback": "QUERY STRING",
+                "color": "#75be09",
+                "title": "QUERY STRING",
+                "text": ""
             }
-        } elseif (!$redirect["targetqs"] && !$redirect["newqs"] && $redirect["newurl"]) {
-            $QSarray = processQS($qs, $redirect["preserve"], $redirect["strict"]);
-            if ($redirect["preserve"] == true && $QSarray["newQS"]) {
+        ]
+    }');
+    $message->text .= ">IP: " . $ipaddress . "\n>Referrer: " . $referrer . "\n>User Agent: " . $useragent;
+    if (strpos($referrer, "/wp/wp-admin/edit.php") !== false) {
+        exit;
+    }
+    // normalize attribute keys, lowercase
+    $atts = array_change_key_case((array) $atts, CASE_LOWER);
+
+    // override default attributes with user attributes
+    $redirect = shortcode_atts([
+        "targetqs" => "",
+        "referrer" => "",
+        "newqs" => "",
+        "newurl" => "",
+        "channel" => "logs",
+        "preserve" => "true",
+        "strict" => "false",
+        "nomsg" => "false",
+        "header" => "",
+    ], $atts);
+    /* convert preserve, strict, & nomsg to booleans */
+    if ($redirect["preserve"] == "false") {
+        $redirect["preserve"] = false;
+    } else {
+        $redirect["preserve"] = true;
+    }
+    if ($redirect["strict"] == "true") {
+        $redirect["strict"] = true;
+    } else {
+        $redirect["strict"] = false;
+    }
+    if ($redirect["nomsg"] == "true") {
+        $redirect["nomsg"] = true;
+    } else {
+        $redirect["nomsg"] = false;
+    }
+
+    if ($redirect["targetqs"] && $redirect["newqs"] && $redirect["newurl"]) {
+        if ($redirect["referrer"] && strpos($referrer, $redirect["referrer"]) !== false) {
+            $QSarray = processQS($qs, $redirect["preserve"], $redirect["strict"], $redirect["targetqs"], $redirect["newqs"]);
+            if ($QSarray["found"]) {
                 header("Location:" . $redirect["newurl"] . "?" . $QSarray["newQS"]);
                 $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
                 $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "?" . $QSarray["newQS"] . "\n\n";
@@ -121,7 +88,36 @@ function tfredirect($atts)
             if (strpos($referrer, "/wp/wp-admin/post.php") === false && !$redirect["nomsg"]) {
                 slackMessage($message, $redirect["channel"]);
             }
-            $redirected = true;
+        } elseif (!$redirect["referrer"]) {
+            $QSarray = processQS($qs, $redirect["preserve"], $redirect["strict"], $redirect["targetqs"], $redirect["newqs"]);
+            if ($QSarray["found"]) {
+                header("Location:" . $redirect["newurl"] . "?" . $QSarray["newQS"]);
+                $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
+                $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "?" . $QSarray["newQS"] . "\n\n";
+            } else {
+                header("Location:" . $redirect["newurl"]);
+                $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
+                $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "\n\n";
+            }
+            $message->attachments[0]->text = $QSarray["QS"];
+            if (strpos($referrer, "/wp/wp-admin/post.php") === false && !$redirect["nomsg"]) {
+                slackMessage($message, $redirect["channel"]);
+            }
+        }
+    } elseif (!$redirect["targetqs"] && !$redirect["newqs"] && $redirect["newurl"]) {
+        $QSarray = processQS($qs, $redirect["preserve"], $redirect["strict"]);
+        if ($redirect["preserve"] == true && $QSarray["newQS"]) {
+            header("Location:" . $redirect["newurl"] . "?" . $QSarray["newQS"]);
+            $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
+            $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "?" . $QSarray["newQS"] . "\n\n";
+        } else {
+            header("Location:" . $redirect["newurl"]);
+            $message->text = "<https://trialfacts.com/wp/wp-admin/post.php?post=" . get_the_ID() . "&action=edit&classic-editor|" . $message->text;
+            $message->text .= "\n\n>*REDIRECTED TO:* " . $redirect["newurl"] . "\n\n";
+        }
+        $message->attachments[0]->text = $QSarray["QS"];
+        if (strpos($referrer, "/wp/wp-admin/post.php") === false && !$redirect["nomsg"]) {
+            slackMessage($message, $redirect["channel"]);
         }
     }
 }
@@ -230,7 +226,8 @@ function processQS($querystring, $preserve, $strict, $targetQS = null, $newQS = 
  * $channel -> channel name string */
 function slackMessage($message, $channel)
 {
-    global $webhooks;
+    /* slack webhooks */
+    require "slack.php";
     $channel = strtolower(trim($channel));
     $channel = $webhooks->$channel;
 

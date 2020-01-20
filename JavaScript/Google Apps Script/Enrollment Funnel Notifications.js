@@ -25,7 +25,7 @@ function monitor() {
 
 function checkFunnel(scheduled) {
     /* VARIABLES */
-    var funnelSheet = 'Enrolment Funnel Check'; /* tab name of enrolment funnel check */
+    var funnelSheet = 'Script Helper Tab'; /* tab name of enrolment funnel check */
     var name = 0; /* column number of study name (column numbering starts at 0 (column A)) */
     var sheetLink = 1; /* column of sheet links */
     var referrals = 6; /* column of referral count */
