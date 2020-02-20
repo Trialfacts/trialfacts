@@ -1,0 +1,26 @@
+logging = true
+
+level = tonumber(getvalue(209))
+passfail = 235
+
+function log(var) 
+  if logging == true then
+    print(var)
+    end
+ end
+
+log("start")
+
+if level == nil then
+  level = 7.5
+end
+
+if (level >= 6.5) and (level <=9.9) then
+  setvalue(passfail, "Pass") 
+  log("Pass")
+else 
+  setvalue(passfail, "Fail")
+  log("Fail")
+end
+
+log("end")
