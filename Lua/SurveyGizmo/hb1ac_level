@@ -11,16 +11,13 @@ function log(var)
 
 log("start")
 
-if level == nil then
-  level = 7.5
-end
 
-if (level >= 6.5) and (level <=9.9) then
-  setvalue(passfail, "Pass") 
-  log("Pass")
-else 
-  setvalue(passfail, "Fail")
+if ((level < 6.5) and (level >9.9)) then
+  setvalue(passfail, "Fail") 
   log("Fail")
+else 
+  setvalue(passfail, "Pass")
+  log("Pass")
 end
 
 log("end")
