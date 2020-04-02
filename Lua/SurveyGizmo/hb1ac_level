@@ -15,7 +15,7 @@ if level == nil then
  level = 7.5
 end
 
-if ((level <= 6.5) and (level >=10)) then
+if (level <= 6.5) and (level >=10) then
   setvalue(passfail, "Fail") 
   log("Fail")
 else 
