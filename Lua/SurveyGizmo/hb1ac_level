@@ -1,7 +1,7 @@
 logging = true
 
-level = tonumber(getvalue(209))
-passfail = 235
+level = tonumber(getvalue(211))
+passfail = 231
 
 function log(var) 
   if logging == true then
@@ -12,7 +12,7 @@ function log(var)
 log("start")
 
 
-if ((level < 6.5) and (level >9.9)) then
+if ((level <= 6.5) and (level >=10)) then
   setvalue(passfail, "Fail") 
   log("Fail")
 else 
