@@ -1,6 +1,6 @@
 logging = true
 
-level = tonumber(getvalue(211))
+result = tonumber(getvalue(211))
 passfail = 231
 
 function log(var) 
@@ -10,17 +10,19 @@ function log(var)
  end
 
 log("start")
-
-if level == nil then
- level = 7.5
+  
+if result == nil then
+  result = 7.5
+  log("nil")
 end
 
-if (level <= 6.5) and (level >=10) then
-  setvalue(passfail, "Fail") 
-  log("Fail")
-else 
-  setvalue(passfail, "Pass")
+  
+if (result > 6.5) and (result < 10) then
+  setvalue(passfail, "Pass") 
   log("Pass")
+else 
+  setvalue(passfail, "Fail")
+  log("Fail")
 end
-
+  
 log("end")
