@@ -1,0 +1,70 @@
+logging = false
+  
+time1 = getvalue(213)
+time2 = getvalue(216)
+diff = 233
+pf = 232
+  
+function log(var)
+  if logging == true then
+  print(var)
+  end
+end
+  
+function round(num, numDecimalPlaces)
+ return tonumber(string.format("%." .. (numDecimalPlaces or 0) .. "f", num))
+end
+  
+log("start")
+
+hr1, mn1, ampm1 = string.match(time1, "(%d+):(%d+) (%a+)")
+log(hr1 .. " " .. mn1 .. " " .. ampm1)
+
+hr2, mn2, ampm2 = string.match(time2, "(%d+):(%d+) (%a+)")
+log(hr2 .. " " .. mn2 .. " " .. ampm2)
+
+ampm1 = string.lower(ampm1)
+log(ampm1)
+ampm2 = string.lower(ampm2)
+log(ampm2)
+
+if (hr1 == "12") and (ampm1 == ampm2) then
+  hr1 = 0
+elseif (hr1 == "12") and (ampm1 == "am") and (ampm2 == "pm") then
+  hr1 = 0
+elseif (hr2 == "12") and (ampm1 == ampm2) then
+  hr2 = 12 + hr2
+elseif (hr2 == "12") and (ampm1 == "pm") and (ampm2 == "am") then
+  hr1 = 12 + hr1
+end
+  
+if (ampm1 == "am") and (ampm2 == "pm") then
+  hr2final = hr2 + 12
+  min1 = hr1*60 + mn1
+  min2 = hr2final*60 + mn2
+  difference = round(((min2-min1)/60), 2)
+  log("difference1 " .. difference)
+  setvalue(diff, difference)
+elseif (ampm1 == "pm") and (ampm2 == "am") then
+  hr1final = 12 - hr1
+  min2 = hr2*60 + mn2
+  min1 = hr1final*60 + mn1
+  difference = round(((min2+min1)/60), 2)
+  log("difference2 " .. difference)
+  setvalue(diff, difference)
+else
+  min1 = hr1*60 + mn1
+  min2 = hr2*60 + mn2
+  difference = round(((min2-min1)/60), 2)
+  log("difference3 " .. difference)
+  setvalue(diff, difference)
+end
+  
+if (difference < 11.5) then
+  log("Fail")
+  setvalue(pf, "Fail")
+else
+  log("Pass")
+  setvalue(pf, "Pass")
+ 
+end
