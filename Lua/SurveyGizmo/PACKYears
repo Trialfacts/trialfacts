@@ -1,0 +1,35 @@
+logging = true
+
+A = tonumber(getvalue(238))
+B = tonumber(getvalue(237))
+packyears = 239
+  
+packpassfail = 240
+  
+function log(var)
+  if logging == true then
+  print(var)
+end
+end
+  
+log("start")
+  
+
+if A == nil then
+  setvalue(packyears, "")
+  pyears = 0
+  log("nil")
+else
+  pyears = A/20 * B
+  setvalue(packyears, pyears)
+  log("pyears " .. pyears)
+end
+  
+
+if (pyears >= 10) then
+  setvalue(packpassfail, "Fail")
+  log("Fail")
+else
+  setvalue(packpassfail, "Pass")
+  log("Pass")
+end
